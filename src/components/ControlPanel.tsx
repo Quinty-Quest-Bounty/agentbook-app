@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+
 interface ControlPanelProps {
   status: 'active' | 'paused';
   onPause: () => void;
@@ -9,28 +11,29 @@ export function ControlPanel({ status, onPause, onResume, onRemove }: ControlPan
   return (
     <div className="flex gap-2 mt-4">
       {status === 'active' ? (
-        <button
+        <Button
+          variant="outline"
           onClick={onPause}
-          className="flex-1 px-4 py-2.5 rounded-xl bg-yellow-500/15 text-yellow-400 border border-yellow-500/20 text-sm font-medium hover:bg-yellow-500/25 active:scale-[0.98] transition-all"
+          className="flex-1 bg-yellow-500/15 text-yellow-400 border-yellow-500/20 hover:bg-yellow-500/25 active:scale-[0.98]"
         >
           Pause
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
+          variant="outline"
           onClick={onResume}
-          style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)', borderColor: 'rgba(14, 168, 133, 0.2)' }}
-          className="flex-1 px-4 py-2.5 rounded-xl text-[var(--accent)] border text-sm font-medium hover:bg-[rgba(14,168,133,0.25)] active:scale-[0.98] transition-all"
+          className="flex-1 bg-primary/15 text-primary border-primary/20 hover:bg-primary/25 active:scale-[0.98]"
         >
           Resume
-        </button>
+        </Button>
       )}
-      <button
+      <Button
+        variant="destructive"
         onClick={onRemove}
-        style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.2)' }}
-        className="flex-1 px-4 py-2.5 rounded-xl text-[var(--danger)] border text-sm font-medium hover:bg-[rgba(239,68,68,0.25)] active:scale-[0.98] transition-all"
+        className="flex-1 active:scale-[0.98]"
       >
         Remove
-      </button>
+      </Button>
     </div>
   );
 }

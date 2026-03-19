@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button';
+
 const SPECIALTIES = ['All', 'Coding', 'Design', 'Research', 'Writing', 'Audit'];
 
 interface SpecialtyFilterProps {
@@ -11,17 +13,17 @@ export function SpecialtyFilter({ selected, onChange }: SpecialtyFilterProps) {
       {SPECIALTIES.map((specialty) => {
         const isActive = (specialty === 'All' && selected === '') || selected === specialty;
         return (
-          <button
+          <Button
             key={specialty}
+            variant={isActive ? 'default' : 'outline'}
+            size="sm"
             onClick={() => onChange(specialty === 'All' ? '' : specialty)}
-            className="px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-200"
-            style={isActive
-              ? { background: 'var(--accent)', color: '#fff', boxShadow: '0 0 16px var(--accent-glow)' }
-              : { background: 'var(--input-bg)', color: 'var(--text-secondary)', border: '1px solid var(--input-border)' }
-            }
+            className={`rounded-full whitespace-nowrap ${
+              isActive ? 'shadow-[0_0_16px_var(--accent-glow)]' : ''
+            }`}
           >
             {specialty}
-          </button>
+          </Button>
         );
       })}
     </div>

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { RatingStars } from '../components/RatingStars';
 
 const CATEGORIES = [
@@ -50,93 +52,100 @@ export function RateAgent() {
   if (submitted) {
     return (
       <div className="px-4 flex flex-col items-center justify-center min-h-[80vh]">
-        <div style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)' }} className="w-20 h-20 rounded-full flex items-center justify-center mb-5">
-          <svg className="w-10 h-10 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mb-5">
+          <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-[var(--accent)] text-xl font-bold mb-2">Thank you!</p>
-        <p className="text-[var(--text-secondary)] text-sm mb-6">Your feedback helps improve the ecosystem</p>
-        <button
+        <p className="text-primary text-xl font-bold mb-2">Thank you!</p>
+        <p className="text-muted-foreground text-sm mb-6">Your feedback helps improve the ecosystem</p>
+        <Button
           onClick={() => navigate('/')}
-          className="px-8 py-3 rounded-2xl bg-[var(--accent)] text-white font-semibold shadow-lg shadow-[var(--accent-glow)] active:scale-[0.98] transition-all"
+          className="px-8 h-12 rounded-2xl font-semibold shadow-lg shadow-primary/25"
         >
           Back to Directory
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-4 pb-24">
-      <button
+    <div className="px-4 pt-4 pb-24 space-y-3">
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-[var(--text-secondary)] text-sm mb-5 hover:text-[var(--accent)] transition-colors"
+        className="text-muted-foreground hover:text-primary -ml-2 mb-2"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Back
-      </button>
+      </Button>
 
-      <h1 className="text-2xl font-bold mb-6 text-[var(--text-primary)]">Rate Agent</h1>
+      <h1 className="text-2xl font-bold text-foreground">Rate Agent</h1>
 
       {/* Rating Stars */}
-      <div className="bg-[var(--bg-card)] rounded-2xl p-6 mb-3 border border-[var(--card-border)] text-center">
-        <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Your Rating</label>
-        <div className="flex justify-center">
-          <RatingStars rating={rating} interactive onChange={setRating} size="lg" />
-        </div>
-        {rating > 0 && (
-          <p className="text-sm text-[var(--text-secondary)] mt-3">
-            {['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][rating]}
-          </p>
-        )}
-      </div>
+      <Card>
+        <CardContent className="text-center">
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Your Rating</label>
+          <div className="flex justify-center">
+            <RatingStars rating={rating} interactive onChange={setRating} size="lg" />
+          </div>
+          {rating > 0 && (
+            <p className="text-sm text-muted-foreground mt-3">
+              {['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][rating]}
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Category */}
-      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-3 border border-[var(--card-border)]">
-        <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Category</label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none appearance-none transition-all"
-          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b8b9e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px' } as React.CSSProperties}
-        >
-          {CATEGORIES.map((cat) => (
-            <option key={cat.value} value={cat.value}>
-              {cat.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Card>
+        <CardContent>
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-background text-foreground border border-border focus:border-ring focus:ring-1 focus:ring-ring/50 focus:outline-none appearance-none transition-all"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239494ab'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px' }}
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </CardContent>
+      </Card>
 
       {/* Comment */}
-      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-6 border border-[var(--card-border)]">
-        <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Comment (optional)</label>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Share your experience..."
-          rows={3}
-          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none resize-none transition-all placeholder-[var(--text-secondary)]"
-          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)' } as React.CSSProperties}
-        />
-      </div>
+      <Card>
+        <CardContent>
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Comment (optional)</label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Share your experience..."
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl bg-background text-foreground border border-border focus:border-ring focus:ring-1 focus:ring-ring/50 focus:outline-none resize-none transition-all placeholder:text-muted-foreground"
+          />
+        </CardContent>
+      </Card>
 
       {error && (
-        <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)' }} className="border rounded-xl p-3 mb-4">
-          <p className="text-[var(--danger)] text-sm text-center">{error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
+          <p className="text-destructive text-sm text-center">{error}</p>
         </div>
       )}
 
-      <button
+      <Button
         onClick={handleSubmit}
         disabled={submitting}
-        className="w-full py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold disabled:opacity-50 shadow-lg shadow-[var(--accent-glow)] active:scale-[0.98] transition-all"
+        className="w-full h-12 rounded-2xl font-semibold shadow-lg shadow-primary/25"
       >
         {submitting ? 'Submitting...' : 'Submit Rating'}
-      </button>
+      </Button>
     </div>
   );
 }
