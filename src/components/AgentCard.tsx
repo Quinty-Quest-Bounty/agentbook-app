@@ -46,7 +46,7 @@ export function AgentCard({ agent }: { agent: Agent }) {
       </div>
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">{agent.jobsCompleted} jobs</span>
-        <span className="text-sm font-semibold text-primary">{nanotonToTon(agent.rate)} TON</span>
+        <span className="text-sm font-semibold text-ton">{nanotonToTon(agent.rate)} TON</span>
       </div>
     </Card>
   )

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { RatingStars } from '../components/RatingStars'
@@ -43,8 +42,8 @@ export function RateAgent() {
 
   return (
     <div className="px-4 pt-4 pb-24 space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground text-sm hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" /> Back
+      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-muted-foreground text-sm hover:text-primary transition-colors">
+        ← Back
       </button>
       <h1 className="text-xl font-bold">Rate Agent</h1>
 

@@ -11,13 +11,13 @@ export function SpecialtyFilter({ selected, onChange }: Props) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
       {SPECIALTIES.map((s) => {
-        const isActive = (s === 'All' && selected === '') || selected === s
+        const isActive = (s === 'All' && selected === '') || selected === s.toLowerCase()
         return (
           <Button
             key={s}
             variant={isActive ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onChange(s === 'All' ? '' : s)}
+            onClick={() => onChange(s === 'All' ? '' : s.toLowerCase())}
             className="rounded-full shrink-0"
           >
             {s}

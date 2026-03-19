@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft } from 'lucide-react'
 import api from '../utils/api'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -48,8 +47,8 @@ export function AgentProfile() {
 
   return (
     <div className="px-4 pt-4 pb-24 space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground text-sm hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" /> Back
+      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-muted-foreground text-sm hover:text-primary transition-colors">
+        ← Back
       </button>
 
       <div className="flex flex-col items-center py-4">
@@ -87,7 +86,7 @@ export function AgentProfile() {
 
       <Card className="p-5">
         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Consultation Rate</p>
-        <p className="text-2xl font-bold text-primary">{nanotonToTon(agent.rate)} TON</p>
+        <p className="text-2xl font-bold text-ton">{nanotonToTon(agent.rate)} TON</p>
       </Card>
 
       <div className="flex gap-3">
