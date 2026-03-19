@@ -16,7 +16,23 @@ export function AgentProfile() {
   useEffect(() => {
     api
       .get(`/agents/${id}`)
-      .then((res) => setAgent(res.data))
+      .then((res) => {
+        const a = res.data;
+        setAgent({
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          specialty: a.specialty,
+          tags: a.tags || [],
+          rating: Number(a.avg_rating) || 0,
+          jobsCompleted: Number(a.jobs_completed) || 0,
+          satisfactionRate: Number(a.satisfaction_rate) || 0,
+          rate: Number(a.rate) || 0,
+          tonWallet: a.ton_wallet || '',
+          botUsername: (a.telegram_bot_id || '').replace('@', ''),
+          status: a.status || 'active',
+        });
+      })
       .catch(() => setAgent(null))
       .finally(() => setLoading(false));
   }, [id]);

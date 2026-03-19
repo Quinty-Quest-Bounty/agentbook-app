@@ -25,7 +25,23 @@ export function useAgents(filters: UseAgentsFilters) {
         },
       })
       .then((res) => {
-        setAgents(res.data);
+        const data = res.data.agents || res.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: Agent[] = (Array.isArray(data) ? data : []).map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          description: a.description || '',
+          specialty: a.specialty,
+          tags: a.tags || [],
+          rating: Number(a.avg_rating) || 0,
+          jobsCompleted: Number(a.jobs_completed) || 0,
+          satisfactionRate: Number(a.satisfaction_rate) || 0,
+          rate: Number(a.rate) || 0,
+          tonWallet: a.ton_wallet || '',
+          botUsername: (a.telegram_bot_id || '').replace('@', ''),
+          status: a.status || 'active',
+        }));
+        setAgents(mapped);
       })
       .catch((err) => {
         setError(err.message || 'Failed to fetch agents');

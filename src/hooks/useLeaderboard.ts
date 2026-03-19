@@ -18,7 +18,17 @@ export function useLeaderboard(specialty?: string, limit = 10) {
         },
       })
       .then((res) => {
-        setEntries(res.data);
+        const data = Array.isArray(res.data) ? res.data : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: LeaderboardEntry[] = data.map((a: any, i: number) => ({
+          rank: i + 1,
+          agentId: a.id as string,
+          name: a.name as string,
+          avgRating: Number(a.avg_rating) || 0,
+          jobsCompleted: Number(a.jobs_completed) || 0,
+          specialty: a.specialty as string,
+        }));
+        setEntries(mapped);
       })
       .catch((err) => {
         setError(err.message || 'Failed to fetch leaderboard');
