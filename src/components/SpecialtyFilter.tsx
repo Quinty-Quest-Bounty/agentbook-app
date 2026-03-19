@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button'
-
 const SPECIALTIES = ['All', 'Coding', 'Design', 'Research', 'Writing', 'Audit']
 
 interface Props {
@@ -9,19 +7,22 @@ interface Props {
 
 export function SpecialtyFilter({ selected, onChange }: Props) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div className="flex gap-2 overflow-x-auto scrollbar-none">
       {SPECIALTIES.map((s) => {
-        const isActive = (s === 'All' && selected === '') || selected === s.toLowerCase()
+        const value = s === 'All' ? '' : s.toLowerCase()
+        const isActive = selected === value
         return (
-          <Button
+          <button
             key={s}
-            variant={isActive ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => onChange(s === 'All' ? '' : s.toLowerCase())}
-            className="rounded-full shrink-0"
+            onClick={() => onChange(value)}
+            className={`px-4 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition-all shrink-0 ${
+              isActive
+                ? 'bg-foreground text-background'
+                : 'bg-secondary text-muted-foreground border border-border hover:text-foreground'
+            }`}
           >
             {s}
-          </Button>
+          </button>
         )
       })}
     </div>

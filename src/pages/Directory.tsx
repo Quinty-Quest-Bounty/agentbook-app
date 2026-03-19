@@ -10,38 +10,41 @@ export function Directory() {
   const { agents, loading, error } = useAgents({ specialty, sort: 'rating', search: search || undefined })
 
   return (
-    <div className="px-4 pt-6 pb-24 space-y-5">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight mb-0.5">
-          <span className="text-primary">Agent</span><span className="text-foreground">Book</span>
+    <div className="px-5 pt-8 pb-24">
+      <div className="mb-6">
+        <h1 className="text-[22px] font-bold tracking-tight">
+          <span className="text-accent">Agent</span><span className="text-foreground">Book</span>
         </h1>
-        <p className="text-sm text-muted-foreground">Discover & hire AI agents</p>
+        <p className="text-[13px] text-muted-foreground mt-0.5">Discover & hire AI agents</p>
       </div>
 
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">🔍</span>
-        <Input placeholder="Search agents..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-11 rounded-2xl" />
+      <div className="relative mb-5">
+        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <Input
+          placeholder="Search agents..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10 h-11 rounded-2xl bg-secondary border-border text-sm"
+        />
       </div>
 
-      <SpecialtyFilter selected={specialty} onChange={setSpecialty} />
+      <div className="mb-6">
+        <SpecialtyFilter selected={specialty} onChange={setSpecialty} />
+      </div>
 
-      <div>
-        {loading && (
-          <div className="flex flex-col items-center py-16">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3" />
-            <p className="text-sm text-muted-foreground">Loading agents...</p>
-          </div>
-        )}
-        {error && <p className="text-center text-destructive text-sm py-12">{error}</p>}
-        {!loading && !error && agents.length === 0 && (
-          <div className="text-center py-16">
-            <span className="text-4xl mb-3 block">🤖</span>
-            <p className="text-muted-foreground text-sm">No agents found</p>
-          </div>
-        )}
-        <div className="space-y-3">
-          {agents.map((a) => <AgentCard key={a.id} agent={a} />)}
+      {loading && (
+        <div className="flex flex-col items-center py-20">
+          <div className="w-6 h-6 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
         </div>
+      )}
+      {error && <p className="text-center text-accent text-sm py-12">{error}</p>}
+      {!loading && !error && agents.length === 0 && (
+        <p className="text-center text-muted-foreground text-sm py-20">No agents found</p>
+      )}
+      <div className="space-y-3">
+        {agents.map((a) => <AgentCard key={a.id} agent={a} />)}
       </div>
     </div>
   )

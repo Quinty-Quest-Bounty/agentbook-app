@@ -1,25 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../utils/api'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { RatingStars } from '../components/RatingStars'
 import { nanotonToTon } from '../utils/ton'
 import type { Agent } from '../types'
-
-const GRADIENTS = [
-  'linear-gradient(135deg, #10b981, #0d9488)',
-  'linear-gradient(135deg, #3b82f6, #4f46e5)',
-  'linear-gradient(135deg, #a855f7, #ec4899)',
-  'linear-gradient(135deg, #f97316, #ef4444)',
-  'linear-gradient(135deg, #06b6d4, #3b82f6)',
-  'linear-gradient(135deg, #f43f5e, #ec4899)',
-]
-
-function getGradient(name: string) {
-  return GRADIENTS[name.charCodeAt(0) % GRADIENTS.length]
-}
 
 export function AgentProfile() {
   const { id } = useParams<{ id: string }>()
@@ -42,62 +27,65 @@ export function AgentProfile() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
-  if (!agent) return <p className="text-center text-destructive py-16">Agent not found</p>
+  if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-6 h-6 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" /></div>
+  if (!agent) return <p className="text-center text-muted-foreground py-16">Agent not found</p>
 
   return (
-    <div className="px-4 pt-4 pb-24 space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-muted-foreground text-sm hover:text-primary transition-colors">
+    <div className="px-5 pt-5 pb-24">
+      <button onClick={() => navigate(-1)} className="text-muted-foreground text-sm hover:text-foreground transition-colors mb-6">
         ← Back
       </button>
 
-      <div className="flex flex-col items-center py-4">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-3 shadow-lg" style={{ background: getGradient(agent.name) }}>
-          <span className="text-white font-bold text-2xl">{agent.name[0].toUpperCase()}</span>
+      <div className="flex flex-col items-center mb-8">
+        <div className="w-16 h-16 rounded-full bg-secondary border border-border flex items-center justify-center mb-3">
+          <span className="text-foreground font-bold text-xl">{agent.name[0]}</span>
         </div>
-        <h1 className="text-xl font-bold mb-1">{agent.name}</h1>
-        <Badge className="mb-3">{agent.specialty}</Badge>
-        <p className="text-sm text-muted-foreground text-center max-w-xs">{agent.description}</p>
+        <h1 className="text-lg font-bold tracking-tight">{agent.name}</h1>
+        <span className="text-[12px] font-medium text-primary bg-primary/10 px-2.5 py-0.5 rounded-md mt-1.5">{agent.specialty}</span>
       </div>
 
+      <p className="text-sm text-muted-foreground leading-relaxed text-center mb-6">{agent.description}</p>
+
       {agent.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 justify-center">
-          {agent.tags.map((t) => <Badge key={t} variant="secondary" className="text-[11px]">{t}</Badge>)}
+        <div className="flex flex-wrap gap-1.5 justify-center mb-6">
+          {agent.tags.map((t) => (
+            <span key={t} className="text-[11px] text-muted-foreground bg-secondary px-2 py-0.5 rounded border border-border">{t}</span>
+          ))}
         </div>
       )}
 
-      <Card className="p-5">
-        <div className="grid grid-cols-3 gap-4 text-center">
+      <div className="bg-card rounded-2xl border border-border p-5 mb-4">
+        <div className="grid grid-cols-3 text-center">
           <div>
-            <div className="flex justify-center mb-1"><RatingStars rating={Math.round(agent.rating)} size="sm" /></div>
             <p className="text-lg font-bold">{agent.rating.toFixed(1)}</p>
-            <p className="text-[11px] text-muted-foreground">Rating</p>
+            <div className="flex justify-center mt-0.5"><RatingStars rating={Math.round(agent.rating)} size="sm" /></div>
+            <p className="text-[11px] text-muted-foreground mt-1">Rating</p>
           </div>
           <div className="border-x border-border">
-            <p className="text-lg font-bold mt-5">{agent.jobsCompleted}</p>
-            <p className="text-[11px] text-muted-foreground">Jobs</p>
+            <p className="text-lg font-bold">{agent.jobsCompleted}</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Jobs</p>
           </div>
           <div>
-            <p className="text-lg font-bold mt-5">{agent.satisfactionRate}%</p>
-            <p className="text-[11px] text-muted-foreground">Satisfaction</p>
+            <p className="text-lg font-bold">{agent.satisfactionRate}%</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Satisfaction</p>
           </div>
         </div>
-      </Card>
-
-      <Card className="p-5">
-        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Consultation Rate</p>
-        <p className="text-2xl font-bold text-ton">{nanotonToTon(agent.rate)} TON</p>
-      </Card>
-
-      <div className="flex gap-3">
-        <Button variant="outline" className="flex-1" asChild>
-          <a href={`https://t.me/${agent.botUsername}`} target="_blank" rel="noopener noreferrer">Chat on Telegram</a>
-        </Button>
-        <Button className="flex-1">Hire & Pay</Button>
       </div>
-      <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => navigate(`/rate/${agent.id}`)}>
+
+      <div className="bg-card rounded-2xl border border-border p-5 mb-6">
+        <p className="text-[11px] text-muted-foreground uppercase tracking-widest mb-1">Rate</p>
+        <p className="text-xl font-bold">{nanotonToTon(agent.rate)} <span className="text-primary text-sm">TON</span></p>
+      </div>
+
+      <div className="flex gap-3 mb-3">
+        <Button variant="outline" className="flex-1 h-11 rounded-xl" asChild>
+          <a href={`https://t.me/${agent.botUsername}`} target="_blank" rel="noopener noreferrer">Chat</a>
+        </Button>
+        <Button className="flex-1 h-11 rounded-xl">Hire & Pay</Button>
+      </div>
+      <button onClick={() => navigate(`/rate/${agent.id}`)} className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
         Rate this agent
-      </Button>
+      </button>
     </div>
   )
 }
