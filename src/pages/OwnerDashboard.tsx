@@ -8,54 +8,93 @@ export function OwnerDashboard() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
-    <div className="p-4 pb-20">
-      <h1 className="text-2xl font-bold mb-4">My Agents</h1>
+    <div className="px-4 pt-6 pb-24">
+      <h1 className="text-2xl font-bold mb-1">
+        <span className="bg-gradient-to-r from-[var(--accent)] to-emerald-300 bg-clip-text text-transparent">
+          My Agents
+        </span>
+      </h1>
+      <p className="text-sm text-[var(--text-secondary)] mb-5">Manage your registered agents</p>
 
-      {loading && <p className="text-center text-[var(--text-secondary)] py-8">Loading...</p>}
-      {error && <p className="text-center text-[var(--danger)] py-8">{error}</p>}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-sm text-[var(--text-secondary)]">Loading...</p>
+        </div>
+      )}
+      {error && (
+        <div className="text-center py-12">
+          <p className="text-[var(--danger)] text-sm">{error}</p>
+        </div>
+      )}
 
       {!loading && !error && agents.length === 0 && (
-        <p className="text-center text-[var(--text-secondary)] py-8">You have no agents registered</p>
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-16 h-16 rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center mb-4">
+            <svg className="w-7 h-7 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <p className="text-[var(--text-secondary)] text-sm font-medium">No agents registered</p>
+          <p className="text-[var(--text-secondary)]/60 text-xs mt-1">Register your first agent to get started</p>
+        </div>
       )}
 
       <div className="space-y-3">
         {agents.map((agent) => {
           const isExpanded = expandedId === agent.id;
           return (
-            <div key={agent.id} className="bg-[var(--bg-card)] rounded-xl p-4">
+            <div key={agent.id} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--card-border)] overflow-hidden">
               <div
-                className="flex items-center justify-between cursor-pointer"
+                className="flex items-center justify-between cursor-pointer p-4"
                 onClick={() => setExpandedId(isExpanded ? null : agent.id)}
               >
-                <div>
-                  <h3 className="font-semibold">{agent.name}</h3>
-                  <p className="text-xs text-[var(--text-secondary)]">{agent.specialty}</p>
+                <div className="flex items-center gap-3">
+                  {/* Status dot */}
+                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                    agent.status === 'active'
+                      ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.4)]'
+                      : 'bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.4)]'
+                  }`} />
+                  <div>
+                    <h3 className="font-semibold text-sm text-[var(--text-primary)]">{agent.name}</h3>
+                    <p className="text-xs text-[var(--text-secondary)] mt-0.5">{agent.specialty}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
+                    className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${
                       agent.status === 'active'
-                        ? 'bg-green-900/40 text-green-400'
-                        : 'bg-yellow-900/40 text-yellow-400'
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                        : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
                     }`}
                   >
                     {agent.status}
                   </span>
-                  <span className="text-[var(--text-secondary)]">{isExpanded ? '▲' : '▼'}</span>
+                  <svg
+                    className={`w-4 h-4 text-[var(--text-secondary)] transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
               </div>
 
               {isExpanded && (
-                <div className="mt-4 border-t border-gray-700 pt-4">
-                  <h4 className="text-sm font-medium mb-2">Chat History</h4>
-                  <ChatHistory sessions={agent.chatHistory} />
+                <div className="px-4 pb-4 border-t border-[var(--glass-border)]">
+                  <div className="pt-4">
+                    <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-3">Chat History</h4>
+                    <ChatHistory sessions={agent.chatHistory} />
 
-                  <ControlPanel
-                    status={agent.status}
-                    onPause={() => pauseAgent(agent.id)}
-                    onResume={() => resumeAgent(agent.id)}
-                    onRemove={() => removeAgent(agent.id)}
-                  />
+                    <ControlPanel
+                      status={agent.status}
+                      onPause={() => pauseAgent(agent.id)}
+                      onResume={() => resumeAgent(agent.id)}
+                      onRemove={() => removeAgent(agent.id)}
+                    />
+                  </div>
                 </div>
               )}
             </div>

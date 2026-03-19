@@ -6,6 +6,20 @@ import { PaymentModal } from '../components/PaymentModal';
 import { nanotonToTon } from '../utils/ton';
 import type { Agent } from '../types';
 
+const AVATAR_GRADIENTS = [
+  'from-emerald-500 to-teal-600',
+  'from-blue-500 to-indigo-600',
+  'from-purple-500 to-pink-600',
+  'from-orange-500 to-red-600',
+  'from-cyan-500 to-blue-600',
+  'from-rose-500 to-pink-600',
+];
+
+function getGradient(name: string) {
+  const index = name.charCodeAt(0) % AVATAR_GRADIENTS.length;
+  return AVATAR_GRADIENTS[index];
+}
+
 export function AgentProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -38,35 +52,52 @@ export function AgentProfile() {
   }, [id]);
 
   if (loading) {
-    return <p className="text-center text-[var(--text-secondary)] py-16">Loading...</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   if (!agent) {
-    return <p className="text-center text-[var(--danger)] py-16">Agent not found</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <p className="text-[var(--danger)] text-sm">Agent not found</p>
+      </div>
+    );
   }
 
   return (
-    <div className="p-4 pb-20">
+    <div className="px-4 pt-4 pb-24">
       <button
         onClick={() => navigate(-1)}
-        className="text-[var(--accent)] text-sm mb-4 hover:underline"
+        className="flex items-center gap-1.5 text-[var(--text-secondary)] text-sm mb-5 hover:text-[var(--accent)] transition-colors"
       >
-        &larr; Back
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
       </button>
 
-      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-4">
-        <div className="flex items-start justify-between mb-3">
-          <h1 className="text-xl font-bold">{agent.name}</h1>
-          <span className="text-xs bg-[var(--accent)]/20 text-[var(--accent)] px-3 py-1 rounded-full">
-            {agent.specialty}
-          </span>
+      {/* Hero Section */}
+      <div className="flex flex-col items-center mb-6">
+        <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${getGradient(agent.name)} flex items-center justify-center mb-3 shadow-lg shadow-[var(--accent-glow)]`}>
+          <span className="text-white font-bold text-2xl">{agent.name.charAt(0).toUpperCase()}</span>
         </div>
-        <p className="text-[var(--text-secondary)] text-sm mb-4">{agent.description}</p>
+        <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">{agent.name}</h1>
+        <span className="text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)] px-3 py-1 rounded-full">
+          {agent.specialty}
+        </span>
+      </div>
+
+      {/* Description */}
+      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-3 border border-[var(--card-border)]">
+        <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{agent.description}</p>
 
         {agent.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-1.5 mt-4">
             {agent.tags.map((tag) => (
-              <span key={tag} className="text-xs bg-gray-700 px-2 py-1 rounded">
+              <span key={tag} className="text-[11px] font-medium bg-[var(--glass-bg)] text-[var(--text-secondary)] px-2.5 py-1 rounded-lg border border-[var(--glass-border)]">
                 {tag}
               </span>
             ))}
@@ -74,43 +105,59 @@ export function AgentProfile() {
         )}
       </div>
 
-      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-4">
-        <h2 className="font-semibold mb-3">Stats</h2>
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <div className="flex justify-center mb-1">
+      {/* Stats Grid */}
+      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-3 border border-[var(--card-border)]">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <div className="flex justify-center mb-1.5">
               <RatingStars rating={Math.round(agent.rating)} size="sm" />
             </div>
-            <p className="text-xs text-[var(--text-secondary)]">{agent.rating.toFixed(1)} avg</p>
+            <p className="text-lg font-bold text-[var(--text-primary)]">{agent.rating.toFixed(1)}</p>
+            <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">Rating</p>
           </div>
-          <div>
-            <p className="text-lg font-bold">{agent.jobsCompleted}</p>
-            <p className="text-xs text-[var(--text-secondary)]">Jobs done</p>
+          <div className="text-center border-x border-[var(--glass-border)]">
+            <div className="mb-1.5">
+              <svg className="w-4 h-4 text-[var(--accent)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-lg font-bold text-[var(--text-primary)]">{agent.jobsCompleted}</p>
+            <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">Jobs done</p>
           </div>
-          <div>
-            <p className="text-lg font-bold">{agent.satisfactionRate}%</p>
-            <p className="text-xs text-[var(--text-secondary)]">Satisfaction</p>
+          <div className="text-center">
+            <div className="mb-1.5">
+              <svg className="w-4 h-4 text-[var(--accent)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-lg font-bold text-[var(--text-primary)]">{agent.satisfactionRate}%</p>
+            <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">Satisfaction</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-6">
-        <p className="text-[var(--text-secondary)] text-sm">Rate</p>
-        <p className="text-xl font-bold text-[var(--accent)]">{nanotonToTon(agent.rate)} TON <span className="text-sm font-normal text-[var(--text-secondary)]">per consultation</span></p>
+      {/* Rate Card */}
+      <div className="bg-[var(--bg-card)] rounded-2xl p-5 mb-6 border border-[var(--card-border)]">
+        <p className="text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-1">Rate</p>
+        <div className="flex items-baseline gap-2">
+          <p className="text-2xl font-bold text-[var(--accent)]">{nanotonToTon(agent.rate)} TON</p>
+          <span className="text-sm text-[var(--text-secondary)]">per consultation</span>
+        </div>
       </div>
 
-      <div className="flex gap-3">
+      {/* Action Buttons */}
+      <div className="flex gap-3 mb-3">
         <a
           href={`https://t.me/${agent.botUsername}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-3 rounded-xl bg-[var(--bg-card)] text-center font-semibold hover:bg-[var(--bg-card)]/80 transition-colors"
+          className="flex-1 py-3.5 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-center font-semibold text-sm text-[var(--text-primary)] hover:bg-[var(--glass-border)] active:scale-[0.98] transition-all"
         >
           Chat on Telegram
         </a>
         <button
           onClick={() => setShowPayment(true)}
-          className="flex-1 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold transition-colors"
+          className="flex-1 py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm shadow-lg shadow-[var(--accent-glow)] active:scale-[0.98] transition-all"
         >
           Hire & Pay
         </button>
@@ -118,7 +165,7 @@ export function AgentProfile() {
 
       <button
         onClick={() => navigate(`/rate/${agent.id}`)}
-        className="w-full mt-3 py-3 rounded-xl bg-[var(--bg-secondary)] text-center text-sm font-medium hover:bg-[var(--bg-secondary)]/80 transition-colors"
+        className="w-full py-3 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-center text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-border)] active:scale-[0.98] transition-all"
       >
         Rate this agent
       </button>

@@ -8,14 +8,28 @@ export function Leaderboard() {
   const { entries, loading, error } = useLeaderboard(specialty || undefined);
 
   return (
-    <div className="p-4 pb-20">
-      <h1 className="text-2xl font-bold mb-4">Leaderboard</h1>
+    <div className="px-4 pt-6 pb-24">
+      <h1 className="text-2xl font-bold mb-1">
+        <span className="bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+          Leaderboard
+        </span>
+      </h1>
+      <p className="text-sm text-[var(--text-secondary)] mb-5">Top performing agents</p>
 
       <SpecialtyFilter selected={specialty} onChange={setSpecialty} />
 
-      <div className="mt-4">
-        {loading && <p className="text-center text-[var(--text-secondary)] py-8">Loading...</p>}
-        {error && <p className="text-center text-[var(--danger)] py-8">{error}</p>}
+      <div className="mt-5">
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mb-3" />
+            <p className="text-sm text-[var(--text-secondary)]">Loading...</p>
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-[var(--danger)] text-sm">{error}</p>
+          </div>
+        )}
         {!loading && !error && <LeaderboardTable entries={entries} />}
       </div>
     </div>

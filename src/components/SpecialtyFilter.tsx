@@ -7,20 +7,23 @@ interface SpecialtyFilterProps {
 
 export function SpecialtyFilter({ selected, onChange }: SpecialtyFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      {SPECIALTIES.map((specialty) => (
-        <button
-          key={specialty}
-          onClick={() => onChange(specialty === 'All' ? '' : specialty)}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-            (specialty === 'All' && selected === '') || selected === specialty
-              ? 'bg-[var(--accent)] text-white'
-              : 'bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-card)]/80'
-          }`}
-        >
-          {specialty}
-        </button>
-      ))}
+    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {SPECIALTIES.map((specialty) => {
+        const isActive = (specialty === 'All' && selected === '') || selected === specialty;
+        return (
+          <button
+            key={specialty}
+            onClick={() => onChange(specialty === 'All' ? '' : specialty)}
+            className={`px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap transition-all duration-200 ${
+              isActive
+                ? 'bg-[var(--accent)] text-white shadow-[0_0_12px_var(--accent-glow)]'
+                : 'bg-[var(--glass-bg)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:text-[var(--text-primary)] hover:border-[var(--text-secondary)]/30'
+            }`}
+          >
+            {specialty}
+          </button>
+        );
+      })}
     </div>
   );
 }

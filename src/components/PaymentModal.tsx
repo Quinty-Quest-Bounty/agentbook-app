@@ -19,34 +19,44 @@ export function PaymentModal({ agent, onClose }: PaymentModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-50" onClick={onClose}>
       <div
-        className="bg-[var(--bg-secondary)] rounded-2xl p-6 w-full max-w-sm"
+        className="bg-[var(--bg-secondary)] rounded-t-3xl sm:rounded-3xl p-6 w-full sm:max-w-sm border-t border-[var(--glass-border)] sm:border sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold mb-4">Hire {agent.name}</h2>
+        {/* Handle bar */}
+        <div className="w-10 h-1 bg-[var(--glass-border)] rounded-full mx-auto mb-5 sm:hidden" />
 
-        <div className="bg-[var(--bg-primary)] rounded-lg p-4 mb-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-[var(--text-secondary)]">Service</span>
-            <span>Consultation</span>
+        <h2 className="text-lg font-bold text-[var(--text-primary)] mb-5">Hire {agent.name}</h2>
+
+        <div className="bg-[var(--bg-primary)] rounded-2xl p-4 mb-5 border border-[var(--card-border)]">
+          <div className="flex justify-between mb-3">
+            <span className="text-sm text-[var(--text-secondary)]">Service</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">Consultation</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-[var(--text-secondary)]">Amount</span>
-            <span className="text-[var(--accent)] font-bold">{nanotonToTon(agent.rate)} TON</span>
+          <div className="border-t border-[var(--glass-border)] pt-3 flex justify-between">
+            <span className="text-sm text-[var(--text-secondary)]">Amount</span>
+            <span className="text-sm font-bold text-[var(--accent)]">{nanotonToTon(agent.rate)} TON</span>
           </div>
         </div>
 
         {error && (
-          <p className="text-[var(--danger)] text-sm mb-4">{error}</p>
+          <div className="bg-[var(--danger)]/10 border border-[var(--danger)]/20 rounded-xl p-3 mb-4">
+            <p className="text-[var(--danger)] text-sm text-center">{error}</p>
+          </div>
         )}
 
         {success ? (
           <div className="text-center">
-            <p className="text-[var(--accent)] font-semibold mb-4">Payment successful!</p>
+            <div className="w-14 h-14 rounded-full bg-[var(--accent)]/15 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-[var(--accent)] font-semibold mb-5">Payment successful!</p>
             <button
               onClick={onClose}
-              className="w-full py-3 rounded-xl bg-[var(--accent)] text-white font-semibold"
+              className="w-full py-3.5 rounded-2xl bg-[var(--accent)] text-white font-semibold shadow-lg shadow-[var(--accent-glow)] active:scale-[0.98] transition-all"
             >
               Done
             </button>
@@ -55,14 +65,14 @@ export function PaymentModal({ agent, onClose }: PaymentModalProps) {
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl bg-gray-700 text-white font-semibold"
+              className="flex-1 py-3.5 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-primary)] font-semibold text-sm hover:bg-[var(--glass-border)] active:scale-[0.98] transition-all"
             >
               Cancel
             </button>
             <button
               onClick={handlePay}
               disabled={loading}
-              className="flex-1 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold disabled:opacity-50 transition-colors"
+              className="flex-1 py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm disabled:opacity-50 shadow-lg shadow-[var(--accent-glow)] active:scale-[0.98] transition-all"
             >
               {loading ? 'Processing...' : 'Pay'}
             </button>
