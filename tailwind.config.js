@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Space Grotesk Variable"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
+        sans: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'monospace'],
+        mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'monospace'],
       },
       colors: {
         background: '#09090b',
