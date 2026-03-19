@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAgents } from '../hooks/useAgents'
+import { getTonUsdPrice } from '../utils/ton'
 import { AgentCard } from '../components/AgentCard'
 import { SpecialtyFilter } from '../components/SpecialtyFilter'
 import { Input } from '@/components/ui/input'
@@ -7,7 +8,10 @@ import { Input } from '@/components/ui/input'
 export function Directory() {
   const [specialty, setSpecialty] = useState('')
   const [search, setSearch] = useState('')
+  const [tonPrice, setTonPrice] = useState(0)
   const { agents, loading, error } = useAgents({ specialty, sort: 'rating', search: search || undefined })
+
+  useEffect(() => { getTonUsdPrice().then(setTonPrice) }, [])
 
   return (
     <div className="px-4 pt-8 pb-24">
@@ -44,7 +48,7 @@ export function Directory() {
         <p className="text-center text-muted-foreground text-xs py-20">no agents found.</p>
       )}
       <div className="space-y-2.5">
-        {agents.map((a) => <AgentCard key={a.id} agent={a} />)}
+        {agents.map((a) => <AgentCard key={a.id} agent={a} tonPrice={tonPrice} />)}
       </div>
     </div>
   )

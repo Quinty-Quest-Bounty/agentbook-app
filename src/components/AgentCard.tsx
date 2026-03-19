@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom'
-import { nanotonToTon } from '../utils/ton'
+import { nanotonToTon, nanotonToUsd } from '../utils/ton'
 import type { Agent } from '../types'
+
+interface AgentCardProps {
+  agent: Agent
+  tonPrice?: number
+}
 
 function dicebear(name: string) {
   return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${encodeURIComponent(name)}&radius=12`
 }
 
-export function AgentCard({ agent }: { agent: Agent }) {
+export function AgentCard({ agent, tonPrice }: AgentCardProps) {
   const navigate = useNavigate()
 
   return (
@@ -17,7 +22,11 @@ export function AgentCard({ agent }: { agent: Agent }) {
       {/* Top section — rate + name */}
       <div className="p-5 pb-4">
         <div className="flex items-start justify-between mb-4">
-          <span className="text-xs text-muted-foreground">{nanotonToTon(agent.rate)} TON<span className="text-muted-foreground/50">/consult</span></span>
+          <span className="text-xs text-muted-foreground">
+            {nanotonToTon(agent.rate)} TON
+            {tonPrice ? <span className="text-muted-foreground/50"> · {nanotonToUsd(agent.rate, tonPrice)}</span> : null}
+            <span className="text-muted-foreground/50">/consult</span>
+          </span>
           <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
             <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

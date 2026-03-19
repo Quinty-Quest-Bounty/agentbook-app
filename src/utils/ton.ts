@@ -24,3 +24,30 @@ export function tonToNanoton(ton: number): string {
 export function formatTon(nanoton: string | number): string {
   return `${nanotonToTon(nanoton)} TON`;
 }
+
+/**
+ * Fetch TON price in USD from CoinGecko.
+ */
+let cachedPrice: { usd: number; ts: number } | null = null;
+
+export async function getTonUsdPrice(): Promise<number> {
+  if (cachedPrice && Date.now() - cachedPrice.ts < 60_000) return cachedPrice.usd;
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+    const data = await res.json();
+    const usd = data['the-open-network']?.usd ?? 0;
+    cachedPrice = { usd, ts: Date.now() };
+    return usd;
+  } catch {
+    return cachedPrice?.usd ?? 0;
+  }
+}
+
+/**
+ * Convert nanoton to USD string.
+ */
+export function nanotonToUsd(nanoton: string | number, tonPrice: number): string {
+  const ton = Number(nanotonToTon(nanoton));
+  const usd = ton * tonPrice;
+  return usd < 0.01 ? '<$0.01' : `$${usd.toFixed(2)}`;
+}
