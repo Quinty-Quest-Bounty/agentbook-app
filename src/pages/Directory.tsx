@@ -31,8 +31,12 @@ export function Directory() {
           placeholder="Search agents..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--glass-bg)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none backdrop-blur-sm transition-all"
-          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)' } as React.CSSProperties}
+          className="w-full pl-11 pr-4 py-3 rounded-2xl text-[var(--text-primary)] focus:outline-none transition-all"
+          style={{
+            background: 'var(--input-bg)',
+            border: '1px solid var(--input-border)',
+            color: 'var(--text-primary)',
+          }}
         />
       </div>
 

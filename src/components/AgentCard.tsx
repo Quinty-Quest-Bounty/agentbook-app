@@ -26,7 +26,11 @@ export function AgentCard({ agent }: AgentCardProps) {
   return (
     <div
       onClick={() => navigate(`/agent/${agent.id}`)}
-      className="bg-[var(--bg-card)] rounded-2xl p-4 cursor-pointer border border-[var(--card-border)] hover:border-[rgba(14,168,133,0.3)] active:scale-[0.98] transition-all duration-200"
+      className="rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-all duration-200"
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--card-border)',
+      }}
     >
       <div className="flex items-center gap-3 mb-3">
         {/* Avatar */}
