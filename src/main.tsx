@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { TonConnectUIProvider } from '@tonconnect/ui-react'
 import { BrowserRouter } from 'react-router-dom'
-import '@fontsource-variable/inter'
+import '@fontsource-variable/space-grotesk'
 import App from './App'
 import './index.css'
 

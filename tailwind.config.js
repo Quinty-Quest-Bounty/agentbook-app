@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter Variable', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Space Grotesk Variable"', '"Space Grotesk"', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: '#09090b',
