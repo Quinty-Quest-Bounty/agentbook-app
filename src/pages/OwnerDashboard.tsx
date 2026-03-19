@@ -10,7 +10,7 @@ export function OwnerDashboard() {
   return (
     <div className="px-4 pt-6 pb-24">
       <h1 className="text-2xl font-bold mb-1">
-        <span className="bg-gradient-to-r from-[var(--accent)] to-emerald-300 bg-clip-text text-transparent">
+        <span style={{ background: 'linear-gradient(to right, var(--accent), #6ee7b7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
           My Agents
         </span>
       </h1>
@@ -36,7 +36,7 @@ export function OwnerDashboard() {
             </svg>
           </div>
           <p className="text-[var(--text-secondary)] text-sm font-medium">No agents registered</p>
-          <p className="text-[var(--text-secondary)]/60 text-xs mt-1">Register your first agent to get started</p>
+          <p style={{ color: 'rgba(139, 139, 158, 0.6)' }} className="text-xs mt-1">Register your first agent to get started</p>
         </div>
       )}
 

@@ -50,7 +50,7 @@ export function RateAgent() {
   if (submitted) {
     return (
       <div className="px-4 flex flex-col items-center justify-center min-h-[80vh]">
-        <div className="w-20 h-20 rounded-full bg-[var(--accent)]/15 flex items-center justify-center mb-5">
+        <div style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)' }} className="w-20 h-20 rounded-full flex items-center justify-center mb-5">
           <svg className="w-10 h-10 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -100,8 +100,8 @@ export function RateAgent() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 focus:outline-none appearance-none transition-all"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b8b9e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px' }}
+          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none appearance-none transition-all"
+          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238b8b9e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px' } as React.CSSProperties}
         >
           {CATEGORIES.map((cat) => (
             <option key={cat.value} value={cat.value}>
@@ -119,12 +119,13 @@ export function RateAgent() {
           onChange={(e) => setComment(e.target.value)}
           placeholder="Share your experience..."
           rows={3}
-          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder-[var(--text-secondary)]/60 border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 focus:outline-none resize-none transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none resize-none transition-all placeholder-[var(--text-secondary)]"
+          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)' } as React.CSSProperties}
         />
       </div>
 
       {error && (
-        <div className="bg-[var(--danger)]/10 border border-[var(--danger)]/20 rounded-xl p-3 mb-4">
+        <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)' }} className="border rounded-xl p-3 mb-4">
           <p className="text-[var(--danger)] text-sm text-center">{error}</p>
         </div>
       )}

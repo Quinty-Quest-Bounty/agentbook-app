@@ -18,14 +18,16 @@ export function ControlPanel({ status, onPause, onResume, onRemove }: ControlPan
       ) : (
         <button
           onClick={onResume}
-          className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/20 text-sm font-medium hover:bg-[var(--accent)]/25 active:scale-[0.98] transition-all"
+          style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)', borderColor: 'rgba(14, 168, 133, 0.2)' }}
+          className="flex-1 px-4 py-2.5 rounded-xl text-[var(--accent)] border text-sm font-medium hover:bg-[rgba(14,168,133,0.25)] active:scale-[0.98] transition-all"
         >
           Resume
         </button>
       )}
       <button
         onClick={onRemove}
-        className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--danger)]/15 text-[var(--danger)] border border-[var(--danger)]/20 text-sm font-medium hover:bg-[var(--danger)]/25 active:scale-[0.98] transition-all"
+        style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', borderColor: 'rgba(239, 68, 68, 0.2)' }}
+        className="flex-1 px-4 py-2.5 rounded-xl text-[var(--danger)] border text-sm font-medium hover:bg-[rgba(239,68,68,0.25)] active:scale-[0.98] transition-all"
       >
         Remove
       </button>

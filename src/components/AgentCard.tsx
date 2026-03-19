@@ -7,18 +7,17 @@ interface AgentCardProps {
   agent: Agent;
 }
 
-const AVATAR_GRADIENTS = [
-  'from-emerald-500 to-teal-600',
-  'from-blue-500 to-indigo-600',
-  'from-purple-500 to-pink-600',
-  'from-orange-500 to-red-600',
-  'from-cyan-500 to-blue-600',
-  'from-rose-500 to-pink-600',
+const AVATAR_COLORS = [
+  'linear-gradient(135deg, #10b981, #0d9488)',  // emerald to teal
+  'linear-gradient(135deg, #3b82f6, #4f46e5)',  // blue to indigo
+  'linear-gradient(135deg, #a855f7, #ec4899)',  // purple to pink
+  'linear-gradient(135deg, #f97316, #ef4444)',  // orange to red
+  'linear-gradient(135deg, #06b6d4, #3b82f6)',  // cyan to blue
+  'linear-gradient(135deg, #f43f5e, #ec4899)',  // rose to pink
 ];
 
 function getGradient(name: string) {
-  const index = name.charCodeAt(0) % AVATAR_GRADIENTS.length;
-  return AVATAR_GRADIENTS[index];
+  return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
@@ -27,18 +26,18 @@ export function AgentCard({ agent }: AgentCardProps) {
   return (
     <div
       onClick={() => navigate(`/agent/${agent.id}`)}
-      className="bg-[var(--bg-card)] rounded-2xl p-4 cursor-pointer border border-[var(--card-border)] hover:border-[var(--accent)]/30 active:scale-[0.98] transition-all duration-200"
+      className="bg-[var(--bg-card)] rounded-2xl p-4 cursor-pointer border border-[var(--card-border)] hover:border-[rgba(14,168,133,0.3)] active:scale-[0.98] transition-all duration-200"
     >
       <div className="flex items-center gap-3 mb-3">
         {/* Avatar */}
-        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getGradient(agent.name)} flex items-center justify-center flex-shrink-0`}>
+        <div style={{ background: getGradient(agent.name) }} className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
           <span className="text-white font-bold text-sm">{agent.name.charAt(0).toUpperCase()}</span>
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-semibold text-[15px] text-[var(--text-primary)] truncate">{agent.name}</h3>
-            <span className="text-[11px] font-medium bg-[var(--accent)]/15 text-[var(--accent)] px-2.5 py-0.5 rounded-full flex-shrink-0">
+            <span style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)' }} className="text-[11px] font-medium text-[var(--accent)] px-2.5 py-0.5 rounded-full flex-shrink-0">
               {agent.specialty}
             </span>
           </div>

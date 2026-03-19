@@ -11,13 +11,13 @@ export function Directory() {
   return (
     <div className="px-4 pt-6 pb-24">
       <h1 className="text-2xl font-bold mb-1">
-        <span className="bg-gradient-to-r from-[var(--accent)] to-emerald-300 bg-clip-text text-transparent">
+        <span style={{ background: 'linear-gradient(to right, var(--accent), #6ee7b7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
           AgentBook
         </span>
       </h1>
       <p className="text-sm text-[var(--text-secondary)] mb-5">Discover & hire AI agents</p>
 
-      <div className="relative mb-4">
+      <div className="relative mb-4 mt-2">
         <svg
           className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]"
           fill="none"
@@ -31,13 +31,14 @@ export function Directory() {
           placeholder="Search agents..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--glass-bg)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 focus:outline-none backdrop-blur-sm transition-all"
+          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--glass-bg)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] border border-[var(--glass-border)] focus:border-[var(--accent)] focus:ring-1 focus:outline-none backdrop-blur-sm transition-all"
+          style={{ '--tw-ring-color': 'rgba(14, 168, 133, 0.3)' } as React.CSSProperties}
         />
       </div>
 
       <SpecialtyFilter selected={specialty} onChange={setSpecialty} />
 
-      <div className="mt-5">
+      <div className="mt-6">
         {loading && (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mb-3" />
@@ -57,7 +58,7 @@ export function Directory() {
               </svg>
             </div>
             <p className="text-[var(--text-secondary)] text-sm font-medium">No agents found</p>
-            <p className="text-[var(--text-secondary)]/60 text-xs mt-1">Try a different search or filter</p>
+            <p style={{ color: 'rgba(139, 139, 158, 0.6)' }} className="text-xs mt-1">Try a different search or filter</p>
           </div>
         )}
         <div className="grid grid-cols-1 gap-3">

@@ -6,18 +6,17 @@ import { PaymentModal } from '../components/PaymentModal';
 import { nanotonToTon } from '../utils/ton';
 import type { Agent } from '../types';
 
-const AVATAR_GRADIENTS = [
-  'from-emerald-500 to-teal-600',
-  'from-blue-500 to-indigo-600',
-  'from-purple-500 to-pink-600',
-  'from-orange-500 to-red-600',
-  'from-cyan-500 to-blue-600',
-  'from-rose-500 to-pink-600',
+const AVATAR_COLORS = [
+  'linear-gradient(135deg, #10b981, #0d9488)',  // emerald to teal
+  'linear-gradient(135deg, #3b82f6, #4f46e5)',  // blue to indigo
+  'linear-gradient(135deg, #a855f7, #ec4899)',  // purple to pink
+  'linear-gradient(135deg, #f97316, #ef4444)',  // orange to red
+  'linear-gradient(135deg, #06b6d4, #3b82f6)',  // cyan to blue
+  'linear-gradient(135deg, #f43f5e, #ec4899)',  // rose to pink
 ];
 
 function getGradient(name: string) {
-  const index = name.charCodeAt(0) % AVATAR_GRADIENTS.length;
-  return AVATAR_GRADIENTS[index];
+  return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
 }
 
 export function AgentProfile() {
@@ -81,11 +80,11 @@ export function AgentProfile() {
 
       {/* Hero Section */}
       <div className="flex flex-col items-center mb-6">
-        <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${getGradient(agent.name)} flex items-center justify-center mb-3 shadow-lg shadow-[var(--accent-glow)]`}>
+        <div style={{ background: getGradient(agent.name) }} className="w-20 h-20 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-[var(--accent-glow)]">
           <span className="text-white font-bold text-2xl">{agent.name.charAt(0).toUpperCase()}</span>
         </div>
         <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">{agent.name}</h1>
-        <span className="text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)] px-3 py-1 rounded-full">
+        <span style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)' }} className="text-xs font-medium text-[var(--accent)] px-3 py-1 rounded-full">
           {agent.specialty}
         </span>
       </div>

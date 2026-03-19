@@ -55,3 +55,20 @@ button, a {
   background: var(--accent);
   color: white;
 }
+
+/* Ensure glassmorphism works */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+}
+
+.glass-surface {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+/* Bottom nav safe area */
+.bottom-nav {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}

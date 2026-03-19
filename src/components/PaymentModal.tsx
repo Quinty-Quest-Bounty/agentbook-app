@@ -41,14 +41,14 @@ export function PaymentModal({ agent, onClose }: PaymentModalProps) {
         </div>
 
         {error && (
-          <div className="bg-[var(--danger)]/10 border border-[var(--danger)]/20 rounded-xl p-3 mb-4">
+          <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)' }} className="border rounded-xl p-3 mb-4">
             <p className="text-[var(--danger)] text-sm text-center">{error}</p>
           </div>
         )}
 
         {success ? (
           <div className="text-center">
-            <div className="w-14 h-14 rounded-full bg-[var(--accent)]/15 flex items-center justify-center mx-auto mb-4">
+            <div style={{ backgroundColor: 'rgba(14, 168, 133, 0.15)' }} className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-7 h-7 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
