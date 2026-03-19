@@ -18,7 +18,7 @@ export function RatingStars({ rating, interactive = false, onChange, size = 'md'
         <span
           key={star}
           className={`${interactive ? 'cursor-pointer hover:scale-125 active:scale-95 transition-transform duration-150' : ''} ${
-            star <= rating ? 'text-[var(--star-color)]' : 'text-[#2a2b3d]'
+            star <= rating ? 'text-star' : 'text-muted'
           }`}
           onClick={() => interactive && onChange?.(star)}
           role={interactive ? 'button' : undefined}

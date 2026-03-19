@@ -1,31 +1,29 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 
-const SPECIALTIES = ['All', 'Coding', 'Design', 'Research', 'Writing', 'Audit'];
+const SPECIALTIES = ['All', 'Coding', 'Design', 'Research', 'Writing', 'Audit']
 
-interface SpecialtyFilterProps {
-  selected: string;
-  onChange: (specialty: string) => void;
+interface Props {
+  selected: string
+  onChange: (s: string) => void
 }
 
-export function SpecialtyFilter({ selected, onChange }: SpecialtyFilterProps) {
+export function SpecialtyFilter({ selected, onChange }: Props) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-      {SPECIALTIES.map((specialty) => {
-        const isActive = (specialty === 'All' && selected === '') || selected === specialty;
+      {SPECIALTIES.map((s) => {
+        const isActive = (s === 'All' && selected === '') || selected === s
         return (
           <Button
-            key={specialty}
+            key={s}
             variant={isActive ? 'default' : 'outline'}
             size="sm"
-            onClick={() => onChange(specialty === 'All' ? '' : specialty)}
-            className={`rounded-full whitespace-nowrap ${
-              isActive ? 'shadow-[0_0_16px_var(--accent-glow)]' : ''
-            }`}
+            onClick={() => onChange(s === 'All' ? '' : s)}
+            className="rounded-full shrink-0"
           >
-            {specialty}
+            {s}
           </Button>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
