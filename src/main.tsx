@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { TonConnectUIProvider } from '@tonconnect/ui-react'
 import { BrowserRouter } from 'react-router-dom'
-import '@fontsource-variable/jetbrains-mono'
+import '@fontsource-variable/sora'
 import App from './App'
 import './index.css'
 

@@ -5,8 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'monospace'],
-        mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'monospace'],
+        sans: ['"Sora Variable"', '"Sora"', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: '#09090b',
