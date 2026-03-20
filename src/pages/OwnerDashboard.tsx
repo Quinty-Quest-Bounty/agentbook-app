@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import api from '../utils/api'
+import { nanotonToTon } from '../utils/ton'
 
 const SPECIALTIES = ['coding', 'design', 'research', 'writing', 'audit', 'other'] as const
 
@@ -32,6 +33,18 @@ interface AgentOption {
   name: string
 }
 
+interface EscrowDeal {
+  id: string
+  client_agent_id: string
+  provider_agent_id: string
+  client_agent_name?: string
+  provider_agent_name?: string
+  amount_nanoton: number
+  state: 'created' | 'funded' | 'released' | 'refunded'
+  description?: string
+  created_at: string
+}
+
 function timeAgo(dateStr: string) {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
   if (seconds < 60) return 'just now'
@@ -44,6 +57,13 @@ function avatarUrl(name: string) {
   return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}&size=40`
 }
 
+const STATE_COLORS: Record<string, string> = {
+  created: 'bg-gray-100 text-gray-700 border-gray-200',
+  funded: 'bg-blue-50 text-blue-700 border-blue-200',
+  released: 'bg-green-50 text-green-700 border-green-200',
+  refunded: 'bg-red-50 text-red-700 border-red-200',
+}
+
 export function OwnerDashboard() {
   const [form, setForm] = useState({
     name: '',
@@ -53,7 +73,7 @@ export function OwnerDashboard() {
     telegramBotId: '',
     tonWallet: '',
   })
-  const [apiKey, setApiKey] = useState('')
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('agentbook_api_key') || '')
   const [registeredAgentId, setRegisteredAgentId] = useState('')
   const [registering, setRegistering] = useState(false)
   const [error, setError] = useState('')
@@ -73,6 +93,11 @@ export function OwnerDashboard() {
   const [sending, setSending] = useState(false)
   const [sendSuccess, setSendSuccess] = useState('')
 
+  // Escrow deals state
+  const [deals, setDeals] = useState<EscrowDeal[]>([])
+  const [loadingDeals, setLoadingDeals] = useState(false)
+  const [dealAction, setDealAction] = useState<string | null>(null)
+
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
@@ -86,7 +111,9 @@ export function OwnerDashboard() {
         ownerTelegramId:
           (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id || 0,
       })
-      setApiKey(res.data.apiKey)
+      const newApiKey = res.data.apiKey
+      setApiKey(newApiKey)
+      localStorage.setItem('agentbook_api_key', newApiKey)
       setRegisteredAgentId(res.data.agentId || '')
     } catch (e: any) {
       console.error('Registration failed:', e)
@@ -143,6 +170,50 @@ export function OwnerDashboard() {
     }
   }, [registeredAgentId])
 
+  const fetchDeals = useCallback(async () => {
+    if (!apiKey) return
+    setLoadingDeals(true)
+    try {
+      const res = await api.get(`${API_URL}/payment/deals`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      })
+      setDeals(res.data)
+    } catch (e: any) {
+      console.error('Failed to fetch deals:', e)
+    }
+    setLoadingDeals(false)
+  }, [apiKey])
+
+  const handleRelease = async (paymentId: string) => {
+    setDealAction(paymentId)
+    try {
+      await api.post(
+        `${API_URL}/payment/release`,
+        { paymentId },
+        { headers: { Authorization: `Bearer ${apiKey}` } }
+      )
+      fetchDeals()
+    } catch (e: any) {
+      console.error('Release failed:', e)
+    }
+    setDealAction(null)
+  }
+
+  const handleRefund = async (paymentId: string) => {
+    setDealAction(paymentId)
+    try {
+      await api.post(
+        `${API_URL}/payment/refund`,
+        { paymentId },
+        { headers: { Authorization: `Bearer ${apiKey}` } }
+      )
+      fetchDeals()
+    } catch (e: any) {
+      console.error('Refund failed:', e)
+    }
+    setDealAction(null)
+  }
+
   const handleSendMessage = async () => {
     if (!sendTo || !sendMessage.trim()) return
     setSending(true)
@@ -165,22 +236,23 @@ export function OwnerDashboard() {
     setSending(false)
   }
 
-  // Fetch conversations and agents when apiKey is available
+  // Fetch conversations, agents, and deals when apiKey is available
   useEffect(() => {
     if (apiKey) {
       fetchConversations()
       fetchAgents()
+      fetchDeals()
     }
-  }, [apiKey, fetchConversations, fetchAgents])
+  }, [apiKey, fetchConversations, fetchAgents, fetchDeals])
 
   if (apiKey) {
     return (
       <div className="px-4 pt-6 pb-24 space-y-5">
         {/* Registration success */}
         <div>
-          <h1 className="text-2xl font-bold text-primary">Agent Registered!</h1>
+          <h1 className="text-2xl font-bold text-primary">Agent Dashboard</h1>
           <p className="text-sm text-muted-foreground">
-            Save your API key — it is shown only once.
+            Manage your agent, messages, and escrow deals.
           </p>
         </div>
         <Card className="p-5 space-y-3">
@@ -354,6 +426,93 @@ export function OwnerDashboard() {
             </Card>
           </div>
         )}
+
+        {/* Escrow Deals */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-semibold text-primary">Escrow Deals</h2>
+            <Button size="sm" variant="outline" onClick={fetchDeals} disabled={loadingDeals}>
+              {loadingDeals ? 'Loading...' : 'Refresh'}
+            </Button>
+          </div>
+
+          {deals.length === 0 && !loadingDeals && (
+            <Card className="p-5">
+              <p className="text-sm text-muted-foreground text-center">
+                No escrow deals yet.
+              </p>
+            </Card>
+          )}
+
+          <div className="space-y-2">
+            {deals.map((deal) => (
+              <Card key={deal.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={avatarUrl(deal.provider_agent_name || deal.provider_agent_id)}
+                      alt="agent"
+                      className="w-10 h-10 rounded-full bg-muted"
+                    />
+                    <div>
+                      <p className="font-medium text-sm">
+                        {deal.provider_agent_name || 'Provider'}
+                      </p>
+                      {deal.client_agent_name && (
+                        <p className="text-[11px] text-muted-foreground">
+                          Client: {deal.client_agent_name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[10px] font-medium px-2 py-0.5 rounded border ${
+                      STATE_COLORS[deal.state] || STATE_COLORS.created
+                    }`}
+                  >
+                    {deal.state}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold">
+                    {nanotonToTon(deal.amount_nanoton)}{' '}
+                    <span className="text-primary text-sm font-medium">TON</span>
+                  </p>
+                  <span className="text-[10px] text-muted-foreground">
+                    {timeAgo(deal.created_at)}
+                  </span>
+                </div>
+
+                {deal.description && (
+                  <p className="text-xs text-muted-foreground">{deal.description}</p>
+                )}
+
+                {deal.state === 'funded' && (
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      disabled={dealAction === deal.id}
+                      onClick={() => handleRelease(deal.id)}
+                    >
+                      {dealAction === deal.id ? 'Processing...' : 'Release'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="flex-1"
+                      disabled={dealAction === deal.id}
+                      onClick={() => handleRefund(deal.id)}
+                    >
+                      {dealAction === deal.id ? 'Processing...' : 'Refund'}
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
