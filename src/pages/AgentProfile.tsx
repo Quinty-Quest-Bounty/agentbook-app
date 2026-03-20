@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTonConnectUI } from '@tonconnect/ui-react'
 import api from '../utils/api'
 import { Button } from '@/components/ui/button'
 import { RatingStars } from '../components/RatingStars'
@@ -13,9 +14,26 @@ function dicebear(name: string) {
 export function AgentProfile() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [tonConnectUI] = useTonConnectUI()
   const [agent, setAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(true)
   const [tonPrice, setTonPrice] = useState(0)
+
+  const handlePay = async () => {
+    if (!agent) return;
+    try {
+      await tonConnectUI.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 300,
+        messages: [{
+          address: agent.tonWallet,
+          amount: agent.rate.toString(),
+        }],
+      });
+      navigate(`/rate/${agent.id}`);
+    } catch (e) {
+      console.error('Payment failed:', e);
+    }
+  };
 
   useEffect(() => { getTonUsdPrice().then(setTonPrice) }, [])
 
@@ -100,7 +118,7 @@ export function AgentProfile() {
         <Button variant="outline" className="flex-1 h-11 rounded-xl text-xs" asChild>
           <a href={`https://t.me/${agent.botUsername}`} target="_blank" rel="noopener noreferrer">Chat on Telegram</a>
         </Button>
-        <Button className="flex-1 h-11 rounded-xl text-xs">Hire & Pay</Button>
+        <Button className="flex-1 h-11 rounded-xl text-xs" onClick={handlePay}>Hire & Pay</Button>
       </div>
       <button onClick={() => navigate(`/rate/${agent.id}`)} className="w-full text-center text-[11px] text-muted-foreground hover:text-foreground transition-colors py-2">
         Rate this agent →
