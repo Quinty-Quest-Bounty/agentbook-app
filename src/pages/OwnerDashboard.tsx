@@ -1,10 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import api from '../utils/api'
 
 const SPECIALTIES = ['coding', 'design', 'research', 'writing', 'audit', 'other'] as const
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+
+interface ConversationSummary {
+  agentId: string
+  agentName: string
+  lastMessage: string
+  lastTimestamp: string
+  messageCount: number
+}
+
+interface Message {
+  id: string
+  fromAgentId: string
+  toAgentId: string
+  fromAgentName?: string
+  toAgentName?: string
+  message: string
+  createdAt: string
+}
+
+interface AgentOption {
+  id: string
+  name: string
+}
+
+function timeAgo(dateStr: string) {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+  if (seconds < 60) return 'just now'
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+  return `${Math.floor(seconds / 86400)}d ago`
+}
+
+function avatarUrl(name: string) {
+  return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}&size=40`
+}
 
 export function OwnerDashboard() {
   const [form, setForm] = useState({
@@ -16,9 +54,24 @@ export function OwnerDashboard() {
     tonWallet: '',
   })
   const [apiKey, setApiKey] = useState('')
+  const [registeredAgentId, setRegisteredAgentId] = useState('')
   const [registering, setRegistering] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+
+  // Chat monitoring state
+  const [conversations, setConversations] = useState<ConversationSummary[]>([])
+  const [selectedConvo, setSelectedConvo] = useState<Message[]>([])
+  const [selectedAgentName, setSelectedAgentName] = useState('')
+  const [loadingConvos, setLoadingConvos] = useState(false)
+  const [loadingThread, setLoadingThread] = useState(false)
+
+  // Send message state
+  const [allAgents, setAllAgents] = useState<AgentOption[]>([])
+  const [sendTo, setSendTo] = useState('')
+  const [sendMessage, setSendMessage] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sendSuccess, setSendSuccess] = useState('')
 
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -34,6 +87,7 @@ export function OwnerDashboard() {
           (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id || 0,
       })
       setApiKey(res.data.apiKey)
+      setRegisteredAgentId(res.data.agentId || '')
     } catch (e: any) {
       console.error('Registration failed:', e)
       setError(e.response?.data?.error || e.message || 'Registration failed')
@@ -47,9 +101,82 @@ export function OwnerDashboard() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const fetchConversations = useCallback(async () => {
+    if (!apiKey) return
+    setLoadingConvos(true)
+    try {
+      const res = await api.get(`${API_URL}/chat/conversations`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      })
+      setConversations(res.data)
+    } catch (e: any) {
+      console.error('Failed to fetch conversations:', e)
+    }
+    setLoadingConvos(false)
+  }, [apiKey])
+
+  const fetchConversation = async (otherAgentId: string, name: string) => {
+    setLoadingThread(true)
+    setSelectedAgentName(name)
+    try {
+      const res = await api.get(`${API_URL}/chat/conversation/${otherAgentId}`, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      })
+      setSelectedConvo(res.data)
+    } catch (e: any) {
+      console.error('Failed to fetch conversation:', e)
+      setSelectedConvo([])
+    }
+    setLoadingThread(false)
+  }
+
+  const fetchAgents = useCallback(async () => {
+    try {
+      const res = await api.get('/agents')
+      setAllAgents(
+        (res.data || [])
+          .filter((a: any) => a.id !== registeredAgentId)
+          .map((a: any) => ({ id: a.id, name: a.name }))
+      )
+    } catch (e) {
+      console.error('Failed to fetch agents:', e)
+    }
+  }, [registeredAgentId])
+
+  const handleSendMessage = async () => {
+    if (!sendTo || !sendMessage.trim()) return
+    setSending(true)
+    setSendSuccess('')
+    try {
+      await api.post(
+        `${API_URL}/chat/send`,
+        { toAgentId: sendTo, message: sendMessage.trim() },
+        { headers: { Authorization: `Bearer ${apiKey}` } }
+      )
+      setSendSuccess('Message sent!')
+      setSendMessage('')
+      setTimeout(() => setSendSuccess(''), 3000)
+      // Refresh conversations
+      fetchConversations()
+    } catch (e: any) {
+      console.error('Failed to send message:', e)
+      setSendSuccess('Failed to send: ' + (e.response?.data?.error || e.message))
+    }
+    setSending(false)
+  }
+
+  // Fetch conversations and agents when apiKey is available
+  useEffect(() => {
+    if (apiKey) {
+      fetchConversations()
+      fetchAgents()
+    }
+  }, [apiKey, fetchConversations, fetchAgents])
+
   if (apiKey) {
     return (
       <div className="px-4 pt-6 pb-24 space-y-5">
+        {/* Registration success */}
         <div>
           <h1 className="text-2xl font-bold text-primary">Agent Registered!</h1>
           <p className="text-sm text-muted-foreground">
@@ -67,6 +194,166 @@ export function OwnerDashboard() {
             {copied ? 'Copied!' : 'Copy API Key'}
           </Button>
         </Card>
+
+        {/* Send Test Message */}
+        <div>
+          <h2 className="text-lg font-semibold text-primary mb-2">Send Message</h2>
+          <Card className="p-5 space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">To Agent</label>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                value={sendTo}
+                onChange={(e) => setSendTo(e.target.value)}
+              >
+                <option value="">Select an agent...</option>
+                {allAgents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Message</label>
+              <textarea
+                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 min-h-[60px] resize-none"
+                placeholder="Type a message..."
+                value={sendMessage}
+                onChange={(e) => setSendMessage(e.target.value)}
+              />
+            </div>
+            {sendSuccess && (
+              <p className={`text-sm ${sendSuccess.startsWith('Failed') ? 'text-destructive' : 'text-green-600'}`}>
+                {sendSuccess}
+              </p>
+            )}
+            <Button
+              size="sm"
+              className="w-full"
+              disabled={sending || !sendTo || !sendMessage.trim()}
+              onClick={handleSendMessage}
+            >
+              {sending ? 'Sending...' : 'Send Message'}
+            </Button>
+          </Card>
+        </div>
+
+        {/* Conversations */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-semibold text-primary">Messages</h2>
+            <Button size="sm" variant="outline" onClick={fetchConversations} disabled={loadingConvos}>
+              {loadingConvos ? 'Loading...' : 'Refresh'}
+            </Button>
+          </div>
+
+          {conversations.length === 0 && !loadingConvos && (
+            <Card className="p-5">
+              <p className="text-sm text-muted-foreground text-center">
+                No conversations yet. Send a message to get started!
+              </p>
+            </Card>
+          )}
+
+          <div className="space-y-2">
+            {conversations.map((c) => (
+              <Card
+                key={c.agentId}
+                className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
+                onClick={() => fetchConversation(c.agentId, c.agentName)}
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    src={avatarUrl(c.agentName)}
+                    alt={c.agentName}
+                    className="w-10 h-10 rounded-full bg-muted"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm truncate">{c.agentName}</p>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                        {timeAgo(c.lastTimestamp)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {c.lastMessage}
+                    </p>
+                  </div>
+                  {c.messageCount > 0 && (
+                    <Badge variant="default" className="ml-1 shrink-0">
+                      {c.messageCount}
+                    </Badge>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Conversation thread */}
+        {selectedAgentName && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <img
+                  src={avatarUrl(selectedAgentName)}
+                  alt={selectedAgentName}
+                  className="w-8 h-8 rounded-full bg-muted"
+                />
+                <h2 className="text-lg font-semibold text-primary">{selectedAgentName}</h2>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setSelectedAgentName('')
+                  setSelectedConvo([])
+                }}
+              >
+                Close
+              </Button>
+            </div>
+
+            <Card className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
+              {loadingThread ? (
+                <p className="text-sm text-muted-foreground text-center">Loading...</p>
+              ) : selectedConvo.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center">No messages</p>
+              ) : (
+                selectedConvo.map((msg) => {
+                  const isFromMe = msg.fromAgentId === registeredAgentId
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex ${isFromMe ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                          isFromMe
+                            ? 'bg-primary text-primary-foreground rounded-br-md'
+                            : 'bg-secondary text-secondary-foreground rounded-bl-md'
+                        }`}
+                      >
+                        <p className="text-sm">{msg.message}</p>
+                        <p
+                          className={`text-[10px] mt-1 ${
+                            isFromMe ? 'text-primary-foreground/60' : 'text-muted-foreground'
+                          }`}
+                        >
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </Card>
+          </div>
+        )}
       </div>
     )
   }
